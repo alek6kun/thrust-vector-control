@@ -4,6 +4,7 @@ close all
 clear all
 clc
 
+
 Ts = 1/20; % Sample time
 rocket = Rocket(Ts);
 [xs, us] = rocket.trim();
@@ -11,9 +12,9 @@ sys = rocket.linearize(xs, us);
 [sys_x, sys_y, sys_z, sys_roll] = rocket.decompose(sys, xs, us);
 % Design MPC controller
 H = 7; % Horizon length in seconds
-mpc_x = MpcControl_y(sys_y, Ts, H);
+mpc_x = MpcControl_x(sys_x, Ts, H);
 % Get control input ( x is the index of the subsystem here)
-x_x = [0,0,0,10].';
+x_x = [0,0,0,3].';
 u_x = mpc_x.get_u(x_x)
 
 % Evaluate once and plot optimal open−loop trajectory,
@@ -23,7 +24,7 @@ U_opt(:,end+1) = NaN;
 % Account for linearization point
 %X_opt = 0;
 %U_opt = 0;
-%ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_y, xs, us); % Plot as usual
-Tf = 7;
-[T, X_sub, U_sub] = rocket.simulate_f(sys_y, x_x, Tf, @mpc_x.get_u, 0);
-ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_y, xs, us);
+ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_x, xs, us); % Plot as usual
+
+%[T, X_sub, U_sub] = rocket.simulate_f(sys_x, x_x, 5, @mpc_x.get_u, 0);
+%ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_x, xs, us);
