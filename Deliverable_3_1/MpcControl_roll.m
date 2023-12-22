@@ -35,6 +35,48 @@ classdef MpcControl_roll < MpcControlBase
             % SET THE PROBLEM CONSTRAINTS con AND THE OBJECTIVE obj HERE
             obj = 0;
             con = [];
+
+             %State constraints - not needed? -> no constraints on w_z or
+             %gamma
+            %Input constraints for roll
+            M = [1;-1];
+            m = [deg2rad(20); deg2rad(20)];
+            %YALMIP
+            %Cost matrices 
+            Q = 15*eye(nx); %nx = 2
+            R =0.1*eye(nu); %nu = 1
+
+           % Compute LQR controller for unconstrained system
+            F = [0 1; 0 -1];
+            f = [Inf; Inf];
+            [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
+            K = -K; 
+
+            %Compute maximum invariant set
+            Xf = polytope([F;M*K],[f;m]);
+            Acl = [mpc.A+mpc.B*K];
+            while 1
+                prevXf = Xf;
+                [T,t] = double(Xf);
+                preXf = polytope(T*Acl,t);
+                Xf = intersect(Xf, preXf);
+                if isequal(prevXf, Xf)
+                    break
+                end
+            end
+            [Ff,ff] = double(Xf);
+            %System dynamics
+
+            con = (X(:, 2) == mpc.A * X(:, 1) + mpc.B*U(:,1)) + (M*U(:,1)<= m);
+            obj = U(:, 1)' * R * U(:, 1);
+
+            for i = 1:N-1
+                con = con + (X(:, i+1) == mpc.A * X(:, i) + mpc.B * U(:, i)); %System dynamics
+                con = con + (F*X(:,i) <= f) + (M*U(:,i) <= m); %Input constraints
+                obj = obj + X(:, i)' * Q * X(:, i) + U(:, i)' * R * U(:, i); % Cost function
+            end
+            con = con + (Ff*X(:,N) <= ff);
+            obj = obj + X(:,N)'*Qf*X(:,N);
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
