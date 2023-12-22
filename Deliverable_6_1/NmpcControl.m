@@ -23,8 +23,10 @@ classdef NmpcControl < handle
     end
     
     methods
-        function obj = NmpcControl(rocket, tf)
-           
+        function obj = NmpcControl(rocket, tf, expected_delay)
+        
+            if nargin < 3, expected_delay = 0; end
+            
             import casadi.*
             
             N_segs = ceil(tf/rocket.Ts); % MPC horizon
@@ -119,7 +121,6 @@ classdef NmpcControl < handle
             obj.idx.U = obj.idx.X(2) + [1, (obj.N-1) * obj.nu];
             obj.idx.u0 = obj.idx.U(1) + [0, obj.nu-1];
             
-            expected_delay = 0; % Need to change later
             % Members for delay compensation
             obj.rocket = rocket;
             obj.expected_delay = expected_delay;
