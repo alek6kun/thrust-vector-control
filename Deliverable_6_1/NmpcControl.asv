@@ -65,19 +65,26 @@ classdef NmpcControl < handle
 
             % Cost
             cost = 0;
-
             % Equality constraints (Casadi SX), each entry == 0
             eq_constr = X_sym(:,1) - x0_sym;
             
-            for i = 1:N-1
+            for i = 1:N
                 cost = cost + ...
                 (X_sym(:,i)-X_ref(:,1))'*Q*(X_sym(:,i)-X_ref(:,1))...
                 + U_sym(:,i)'*R*U_sym(:,i);
-                st_next_euler = X_sym(:,i) + (rocket.Ts*rocket.f(X_sym(:,i),U_sym(:,i)));
-                eq_constr = [eq_constr; X_sym(:,i+1)-st_next_euler];
             end
             % Inequality constraints (Casadi SX), each entry <= 0
-            ineq_constr = [];
+            ineq_constr = SX.zeros(nx*N*2+nu*(N-1)*2,1);
+            for i=1:N-1
+                ineq_constr((i-1)*(2*nx+2*nu)+1:i*(2*nx+2*nu), 1) = ...
+                    [X_sym(:,i) - ubx; ...
+                    lbx - X_sym(:,i); ...
+                    U_sym(:,i) - ubu; ...
+                    lbu - U_sym(:,i)];
+            end
+            ineq_constr((N-1)*(2*nx+2*nu)+1:nx*N*2+nu*(N-1)*2, 1) = ...
+                [X_sym(:,N) - ubx; ...
+                lbx - X_sym(:,N)];
             % For box constraints on state and input, overwrite entries of
             % lbx, ubx, lbu, ubu defined above
             
