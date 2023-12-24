@@ -1,5 +1,5 @@
 addpath(fullfile('..', 'src'));
-
+addpath(fullfile('..', '..', 'casadi-3.6.4-windows64-matlab2018b'));
 %close all
 %clear all
 %clc
@@ -7,24 +7,26 @@ addpath(fullfile('..', 'src'));
 %% TODO: This file should produce all the plots for the deliverable
 Ts = 1/20;
 rocket = Rocket(Ts);
-H = 5; % Horizon length in seconds
+H = 3; % Horizon length in seconds
 nmpc = NmpcControl(rocket, H);
 
-% MPC reference with default maximum roll = 15 deg
-%ref = @(t_, x_) ref_TVC(t_);
-ref = [2; 2; 10; 0.5];
-% MPC reference with specified maximum roll = 50 deg
-roll_max = deg2rad(50);
-%ref = @(t_, x_) ref_TVC(t_, roll_max);
-x = [0.5 0.5 0.5 0.1 0.1 0.2 2 2 3 0 0 0]';
-x0 = x;
 % Evaluate once and plot optimal open−loop trajectory,
 % pad last input to get consistent size with time and state
-[u, T_opt, X_opt, U_opt] = nmpc.get_u(x, ref);
+x0 = zeros(12,1);
+ref4 = [2; 2; 2; deg2rad(40)];
+[u, T_opt, X_opt, U_opt] = nmpc.get_u(x0, ref4);
 U_opt(:,end+1) = nan;
-ph = rocket.plotvis(T_opt, X_opt, U_opt, ref);
+ph1 = rocket.plotvis(T_opt, X_opt, U_opt, ref4);
+ph1.fig.Name = 'Optimal open loop trajectory'; % Set a figure title
 
-Tf = 20;
+% Setup MPC reference function with default maximum roll = 15 deg or 50 deg
+%ref = @(t_, x_) ref_TVC(t_);
+roll_max = deg2rad(50);
+ref = @(t_, x_) ref_TVC(t_, roll_max);
+
+% Simulate
+Tf = 30;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
-rocket.anim_rate = 1.0;
-rocket.vis(T,X,U);
+rocket.anim_rate = 2.0;
+ph2 = rocket.plotvis(T, X, U, Ref);
+ph2.fig.Name = 'NMPC in simulation'; % Set a figure title

@@ -47,26 +47,36 @@ classdef NmpcControl < handle
             ubx = inf(nx, 1);
             ubx(4) = deg2rad(75); % Default state constraint for alpha
             ubx(5) = deg2rad(75); % Default state constraint for beta
-            ubx(5) = deg2rad(15); % Default state constraint for gamma
             lbx = -inf(nx, 1);
             lbx(4) = deg2rad(-75); % Default state constraint for alpha
             lbx(5) = deg2rad(-75); % Default state constraint for beta
-            lbx(5) = deg2rad(-15); % Default state constraint for gamma
             ubu = [deg2rad(15); deg2rad(15); 80; 20];
-            lbu = [deg2rad(-15); deg2rad(-15); 20; -20];
+            lbu = [deg2rad(-15); deg2rad(-15); 50; -20];
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % Q and R hyperparameters for cost. Need to tune later.
-            Q = eye(nx);
-            R = eye(nu);
+            Q = eye(nx);  Q(6,6) = 20; Q(10,10) = 10; Q(11,11) = 10; Q(12,12) = 50; 
+            R = eye(nu);  R(3,3) = 0.01; R(4,4) = 0.1
 
             % The reference state where we want to be. No acceleration, and
             % at the target position.
             X_ref = [SX.zeros(5,1); ref_sym(4,1); SX.zeros(3,1); ref_sym(1:3,1)];
+            U_ref = [SX.zeros(4,1)];
 
-            % Cost
-            cost = 0;
+            % Computing the terminal cost : first we linearize and then we
+            % find the optimal LQR cost. We linearize around the trim
+            % point.
+            sys = rocket.linearize();
+            sys_d = c2d(sys, rocket.Ts);
+            A = sys_d.A;
+            B = sys_d.B;
+
+            % P is the solution to the discrete time algebraic Ricatti equation
+            P = idare(A,B,Q,R,[],[]);
+
+            % We intialize the cost with the terminal cost at first
+            cost = X_sym(:,N)'*P*X_sym(:,N);
 
             % Equality constraints (Casadi SX), each entry == 0
             eq_constr = X_sym(:,1) - x0_sym;
@@ -74,12 +84,13 @@ classdef NmpcControl < handle
             for i = 1:N-1
                 cost = cost + ...
                 (X_sym(:,i)-X_ref(:,1))'*Q*(X_sym(:,i)-X_ref(:,1))...
-                + U_sym(:,i)'*R*U_sym(:,i);
+                + (U_sym(:,i)-U_ref(:,1))'*R*(U_sym(:,i)-U_ref(:,1));
                 st_next_euler = X_sym(:,i) + (rocket.Ts*rocket.f(X_sym(:,i),U_sym(:,i)));
                 eq_constr = [eq_constr; X_sym(:,i+1)-st_next_euler];
             end
             % Inequality constraints (Casadi SX), each entry <= 0
             ineq_constr = [];
+
             % For box constraints on state and input, overwrite entries of
             % lbx, ubx, lbu, ubu defined above
             
