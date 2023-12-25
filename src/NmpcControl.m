@@ -50,7 +50,7 @@ classdef NmpcControl < handle
             lbx = -inf(nx, 1);
             lbx(4) = deg2rad(-75); % Default state constraint for alpha
             lbx(5) = deg2rad(-75); % Default state constraint for beta
-            ubu = [deg2rad(15); deg2rad(15); 80; 20];
+            ubu = [deg2rad(1); deg2rad(15); 80; 20];
             lbu = [deg2rad(-15); deg2rad(-15); 50; -20];
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -138,7 +138,7 @@ classdef NmpcControl < handle
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             
-            u_init = [0; 0; 50; 0]; 
+            [~, u_init] = rocket.trim();
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -150,12 +150,13 @@ classdef NmpcControl < handle
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             delay = obj.expected_delay;
-            mem_u = obj.mem_u;
             
             % Delay compensation: Predict x0 delay timesteps later.
             % Simulate x_ for 'delay' timesteps
             x_ = x0;
-            % ...
+            for i=1:delay
+                x_ = x_ + (obj.rocket.Ts*obj.rocket.f(x_,obj.mem_u(:,i)));
+            end
        
             x0 = x_;
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
@@ -173,7 +174,7 @@ classdef NmpcControl < handle
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % Delay compensation: Save current u
             if obj.expected_delay > 0
-               % obj.mem_u = ...
+               obj.mem_u = [obj.mem_u(:, 2:end) u];
             end
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
