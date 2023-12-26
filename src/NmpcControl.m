@@ -55,29 +55,32 @@ classdef NmpcControl < handle
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
-            % Q and R hyperparameters for cost. Need to tune later.
-            Q = eye(nx);  Q(6,6) = 20; Q(10,10) = 10; Q(11,11) = 10; Q(12,12) = 50; 
-            R = eye(nu);  R(3,3) = 0.01; R(4,4) = 0.1
+            % Q and R hyperparameters for cost.
+            Q = eye(nx);  Q(1,1) = 30; Q(2,2) = 30; Q(4,4) = 10; Q(5,5) = 10;
+            Q(6,6) = 20; Q(10,10) = 50; Q(11,11) = 50; Q(12,12) = 500; 
+            R = diag([5,5,0.1,0.1]);
 
             % The reference state where we want to be. No acceleration, and
             % at the target position.
             X_ref = [SX.zeros(5,1); ref_sym(4,1); SX.zeros(3,1); ref_sym(1:3,1)];
+            X_ref(12) = X_ref(12);
             U_ref = [SX.zeros(4,1)];
 
             % Computing the terminal cost : first we linearize and then we
             % find the optimal LQR cost. We linearize around the trim
-            % point.
-            sys = rocket.linearize();
-            sys_d = c2d(sys, rocket.Ts);
-            A = sys_d.A;
-            B = sys_d.B;
-
-            % P is the solution to the discrete time algebraic Ricatti equation
-            P = idare(A,B,Q,R,[],[]);
-
-            % We intialize the cost with the terminal cost at first
-            cost = X_sym(:,N)'*P*X_sym(:,N);
-
+            % point. We have found that it does not improve performance,
+            % and decreases it if the rocket goes too far from 0, 0, 0.
+            % sys = rocket.linearize();
+            % sys_d = c2d(sys, rocket.Ts);
+            % A = sys_d.A;
+            % B = sys_d.B;
+            % 
+            % % P is the solution to the discrete time algebraic Ricatti equation
+            % P = idare(A,B,Q,R,[],[]);
+            % 
+            % % We intialize the cost
+            % cost = X_sym(:,N)'*P*X_sym(:,N);
+            cost = 0;
             % Equality constraints (Casadi SX), each entry == 0
             eq_constr = X_sym(:,1) - x0_sym;
             

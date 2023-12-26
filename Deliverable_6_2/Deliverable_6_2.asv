@@ -4,7 +4,7 @@ addpath(fullfile('..', '..', 'casadi-3.6.4-windows64-matlab2018b'));
 %clear all
 %clc
 
-%% Initialisations
+%% TODO: This file should produce all the plots for the deliverable
 Ts = 1/40; % Higher sampling rate for this part!
 
 % Define NMPC
@@ -19,7 +19,7 @@ Tf = 2.5;
 rocket.mass = 1.75;
 rocket.anim_rate = 2.0;
 
-%% Delay which causes drop in performance
+%% 
 
 rocket.delay = 2;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
@@ -27,7 +27,7 @@ rocket.delay = 2;
 ph1 = rocket.plotvis(T, X, U, Ref);
 ph1.fig.Name = '50ms delay causing drop in performance';
 
-%% Delay which causes unstability
+%%
 
 rocket.delay = 3;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
@@ -35,21 +35,12 @@ rocket.delay = 3;
 ph2 = rocket.plotvis(T, X, U, Ref);
 ph2.fig.Name = '75ms delay causing unstability';
 
-%% Partially compensated delay
+%% 
 
-nmpc = NmpcControl(rocket, H, 7);
+nmpc = NmpcControl(rocket, H,7);
 rocket.delay = 8;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
 
 ph3 = rocket.plotvis(T, X, U, Ref);
-ph3.fig.Name = 'Partial compensation (175ms) of 200ms delay';
-
-%% Fully compensated delay
-
-nmpc = NmpcControl(rocket, H, 8);
-rocket.delay = 8;
-[T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
-
-ph3 = rocket.plotvis(T, X, U, Ref);
-ph3.fig.Name = 'Full delay compensation of 200ms delay';
+ph3.fig.Name = 'Partial compensation (150ms) of 200ms delay';
 
