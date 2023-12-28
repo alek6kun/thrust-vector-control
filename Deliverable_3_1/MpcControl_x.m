@@ -29,7 +29,7 @@ classdef MpcControl_x < MpcControlBase
             max_B_dif = deg2rad(5);
             % Define the weight matrices
             Q = eye(nx);
-            R = eye(nu); 
+            R = 0.5*eye(nu); 
             obj = X(:,1)'*Q*X(:,1) + U(:,1)'*R*U(:,1);
             con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (abs(X(2,1)) <= beta_max)+ (abs(U(1,1))<=max_B_dif);
             for k = 1:N-1

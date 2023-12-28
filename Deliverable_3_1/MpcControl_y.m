@@ -26,7 +26,7 @@ classdef MpcControl_y < MpcControlBase
             X = sdpvar(nx, N, 'full');
             U = sdpvar(nu, N-1, 'full');
             Q = eye(nx);
-            R = eye(nu);
+            R = 0.5*eye(nu);
             alpha_max = deg2rad(10);
             alpha_dif_max = deg2rad(5);
             
