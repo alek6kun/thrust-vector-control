@@ -38,6 +38,20 @@ classdef MpcControl_y < MpcControlBase
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K = -K; 
 
+            %Compute maximum invariant set
+            Xf = polytope([F;M*K],[f;m]);
+            Acl = [mpc.A+mpc.B*K];
+            while 1
+                prevXf = Xf;
+                [T,t] = double(Xf);
+                preXf = polytope(T*Acl,t);
+                Xf = intersect(Xf, preXf);
+                if isequal(prevXf, Xf)
+                    break
+                end
+            end
+            [Ff,ff] = double(Xf);
+
             obj = (U(:, 1)-u_ref)' * R * (U(:, 1)-u_ref);
             con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (F*X(:,1) <= f)+ (M*U(:,1)<=m);
             for k = 1:N-1
