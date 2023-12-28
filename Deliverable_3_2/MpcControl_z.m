@@ -57,7 +57,7 @@ classdef MpcControl_z < MpcControlBase
             %State constraints - not needed? -> altitude = 0?
             %Input constraints for Pavg
             M = [1;-1];
-            m = [80; 50];
+            m = [80-56.65; 50-56.65];
 
             % LQR controller for unconstrained system
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
@@ -70,7 +70,7 @@ classdef MpcControl_z < MpcControlBase
             for i = 1:N-1
                 con = con + (X(:, i+1) == mpc.A * X(:, i) + mpc.B * U(:, i)); %System dynamics
                 con = con + (M*U(:,i) <= m); %Input constraints
-                obj = obj + (X(:, i)-x_ref)' * Q * (X(:, i)- x_ref) + (U(:, i)- u_ref)' * R * (U(:, i)- u_ref); % Cost function
+                obj = obj + (X(:, i)-x_ref)' * Q * (X(:, i)- x_ref) + (U(:, i)- u_ref)' * R * (U(:, i)- u_ref);
             end
             obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
 
@@ -114,9 +114,9 @@ classdef MpcControl_z < MpcControlBase
             con = [xs == 0, us == 0];
 
             M = [1;-1];
-            m = [80; 50];
-            
-            con = [M*us <= m ,...
+            m = [80-56.65; 50-56.65];
+            obj = (us)'*(us);
+            con = [M*us <= m];
                     xs == mpc.A*xs + mpc.B*us,...
                     ref == mpc.C*xs + mpc.D];
             

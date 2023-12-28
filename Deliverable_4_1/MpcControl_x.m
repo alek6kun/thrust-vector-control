@@ -41,7 +41,7 @@ classdef MpcControl_x < MpcControlBase
 
             obj = (U(:, 1)-u_ref)' * R * (U(:, 1)-u_ref);
             con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (F*X(:,1) <= f)+ (M*U(:,1)<=m);
-            for k = 1:N-1
+            for k = 2:N-1
                 obj = obj + (X(:, k)-x_ref)' * Q * (X(:, k)- x_ref) + (U(:, k)- u_ref)' * R * (U(:, k)- u_ref);
                 con = con + (X(:,k+1) == mpc.A*X(:,k) + mpc.B*U(:,k)) + (F*X(:,k)<= f) + (M*U(:,k)<=m);
             end

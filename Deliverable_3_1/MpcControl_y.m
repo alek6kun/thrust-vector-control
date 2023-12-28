@@ -59,7 +59,7 @@ classdef MpcControl_y < MpcControlBase
                 con = con + (X(:,k+1) == mpc.A*X(:,k) + mpc.B*U(:,k)) + (F*X(:,k)<= f) + (M*U(:,k)<=m);
             end
             con = con + (Ff*X(:,N) <= ff);
-            obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
+            obj = obj + X(:,N)'*Qf*X(:,N);
             ctrl_opti = optimizer(con, obj, sdpsettings('solver','gurobi'), ...
                 {X(:,1), x_ref, u_ref}, {U(:,1), X, U});
         end
