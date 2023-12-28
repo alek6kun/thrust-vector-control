@@ -15,7 +15,7 @@ H = 7; % Horizon length in seconds mpc x = MpcControl x(sys x, Ts, H);
 Tf = 7; % seconds of simulation
 
 %x-component
-mpc_x = MpcControl_y(sys_x, Ts, H);
+mpc_x = MpcControl_x(sys_x, Ts, H);
 x_x = [0,0,0,10].';
 [u_x, T_opt, X_opt, U_opt] = mpc_x.get_u(x_x);
 U_opt(:,end+1) = NaN;

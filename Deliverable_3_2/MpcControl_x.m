@@ -30,36 +30,17 @@ classdef MpcControl_x < MpcControlBase
             % Define the weight matrices
             Q = eye(nx);
             R = 0.5*eye(nu); 
-            M = [1;-1];
-            m = [max_B_dif; max_B_dif];
 
-                       % Compute LQR controller for unconstrained system
-            F = [0 1 0 0; 0 -1 0 0];
-            f = [beta_max; beta_max];
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
-            K = -K; 
-
-            %Compute maximum invariant set
-            Xf = polytope([F;M*K],[f;m]);
-            Acl = [mpc.A+mpc.B*K];
-            while 1
-                prevXf = Xf;
-                [T,t] = double(Xf);
-                preXf = polytope(T*Acl,t);
-                Xf = intersect(Xf, preXf);
-                if isequal(prevXf, Xf)
-                    break
-                end
-            end
-            [Ff,ff] = double(Xf);
+            K = -K;
+            
 
             obj = X(:,1)'*Q*X(:,1) + U(:,1)'*R*U(:,1);
-            con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (F*X(:,1) <= f)+ (M*U(:,1)<=m);
+            con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (abs(X(2,1)) <= beta_max)+ (abs(U(1,1))<=max_B_dif);
             for k = 1:N-1
                 obj = obj + X(:,k)'*Q*X(:,k) + U(:,k)'*R*U(:,k);
-                con = con + (X(:,k+1) == mpc.A*X(:,k) + mpc.B*U(:,k)) + (F*X(:,k)<= f) + (M*U(:,k)<=m);
+                con = con + (X(:,k+1) == mpc.A*X(:,k) + mpc.B*U(:,k)) + (abs(X(2,k))<= beta_max) + (abs(U(1,k))<=max_B_dif);
             end
-            
             % Return YALMIP optimizer object
             ctrl_opti = optimizer(con, obj, sdpsettings('solver','gurobi'), ...
                 {X(:,1), x_ref, u_ref}, {U(:,1), X, U});
