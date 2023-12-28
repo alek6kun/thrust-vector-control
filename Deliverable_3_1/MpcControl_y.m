@@ -34,33 +34,18 @@ classdef MpcControl_y < MpcControlBase
 
             % Compute LQR controller for unconstrained system
             F = [0 1 0 0; 0 -1 0 0];
-            f = [alpha_max; alpha_max];
+            f = [beta_max; beta_max];
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K = -K; 
 
-            %Compute maximum invariant set
-            Xf = polytope([F;M*K],[f;m]);
-            Acl = [mpc.A+mpc.B*K];
-            while 1
-                prevXf = Xf;
-                [T,t] = double(Xf);
-                preXf = polytope(T*Acl,t);
-                Xf = intersect(Xf, preXf);
-                if isequal(prevXf, Xf)
-                    break
-                end
-            end
-            [Ff,ff] = double(Xf);
-
-            obj = X(:,1)'*Q*X(:,1) + U(:,1)'*R*U(:,1);
+            obj = (U(:, 1)-u_ref)' * R * (U(:, 1)-u_ref);
             con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (F*X(:,1) <= f)+ (M*U(:,1)<=m);
             for k = 1:N-1
-                obj = obj + X(:,k)'*Q*X(:,k) + U(:,k)'*R*U(:,k);
+                obj = obj + (X(:, k)-x_ref)' * Q * (X(:, k)- x_ref) + (U(:, k)- u_ref)' * R * (U(:, k)- u_ref);
                 con = con + (X(:,k+1) == mpc.A*X(:,k) + mpc.B*U(:,k)) + (F*X(:,k)<= f) + (M*U(:,k)<=m);
             end
             con = con + (Ff*X(:,N) <= ff);
-            obj = obj + X(:,N)'*Qf*X(:,N);
-
+            obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
             ctrl_opti = optimizer(con, obj, sdpsettings('solver','gurobi'), ...
                 {X(:,1), x_ref, u_ref}, {U(:,1), X, U});
         end

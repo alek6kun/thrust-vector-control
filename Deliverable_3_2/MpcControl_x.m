@@ -28,19 +28,24 @@ classdef MpcControl_x < MpcControlBase
             beta_max = deg2rad(10);
             max_B_dif = deg2rad(5);
             % Define the weight matrices
-            Q = eye(nx);
+            Q = 30*eye(nx);
             R = 0.5*eye(nu); 
+            M = [1;-1];
+            m = [max_B_dif; max_B_dif];
 
+                       % Compute LQR controller for unconstrained system
+            F = [0 1 0 0; 0 -1 0 0];
+            f = [beta_max; beta_max];
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
-            K = -K;
-            
+            K = -K; 
 
-            obj = X(:,1)'*Q*X(:,1) + U(:,1)'*R*U(:,1);
-            con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (abs(X(2,1)) <= beta_max)+ (abs(U(1,1))<=max_B_dif);
+            obj = (U(:, 1)-u_ref)' * R * (U(:, 1)-u_ref);
+            con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (F*X(:,1) <= f)+ (M*U(:,1)<=m);
             for k = 1:N-1
-                obj = obj + X(:,k)'*Q*X(:,k) + U(:,k)'*R*U(:,k);
-                con = con + (X(:,k+1) == mpc.A*X(:,k) + mpc.B*U(:,k)) + (abs(X(2,k))<= beta_max) + (abs(U(1,k))<=max_B_dif);
+                obj = obj + (X(:, k)-x_ref)' * Q * (X(:, k)- x_ref) + (U(:, k)- u_ref)' * R * (U(:, k)- u_ref);
+                con = con + (X(:,k+1) == mpc.A*X(:,k) + mpc.B*U(:,k)) + (F*X(:,k)<= f) + (M*U(:,k)<=m);
             end
+            obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
             % Return YALMIP optimizer object
             ctrl_opti = optimizer(con, obj, sdpsettings('solver','gurobi'), ...
                 {X(:,1), x_ref, u_ref}, {U(:,1), X, U});
@@ -63,16 +68,16 @@ classdef MpcControl_x < MpcControlBase
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
-            obj = [];
+            obj = 0;
             con = [xs == 0, us == 0];
-            %alpha_max=deg2rad(10);
-            %beta_max = deg2rad(10);
-            %Pavg_min = 0.5;          % Minimum average throttle
-            %Pavg_max = 0.8;          % Maximum average throttle
-             % Steady-state conditions and constraints
-            %con = [xs == mpc.A*xs + mpc.B*us, mpc.C*xs == ref, ...
-             %      -alpha_max <= xs(2) <= alpha_max, -beta_max <= xs(3) <= beta_max, ...
-              %     Pavg_min <= us(1) <= Pavg_max];
+
+            M = [1;-1];
+            m = [deg2rad(5); deg2rad(5)];
+            
+            con = [M*us <= m ,...
+                    xs == mpc.A*xs + mpc.B*us,...
+                    ref == mpc.C*xs + mpc.D];
+            
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % Compute the steady-state target
