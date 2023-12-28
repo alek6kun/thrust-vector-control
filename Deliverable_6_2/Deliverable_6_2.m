@@ -1,5 +1,4 @@
 addpath(fullfile('..', 'src'));
-addpath(fullfile('..', '..', 'casadi-3.6.4-windows64-matlab2018b'));
 %close all
 %clear all
 %clc

@@ -7,7 +7,7 @@ addpath(fullfile('..', 'Deliverable_4_1'))
 %% Intialisations
 Ts = 1/20;
 rocket = Rocket(Ts);
-H = 2; % Horizon length in seconds
+H = 1.5; % Horizon length in seconds
 nmpc = NmpcControl(rocket, H);
 x0 = zeros(12,1);
 
@@ -55,7 +55,7 @@ sys = rocket.linearize(xs,us);
 
 [sys_x, sys_y, sys_z, sys_roll] = rocket.decompose(sys,xs,us);
 
-H = 2; %[s] Horizon length
+H = 3.0; %[s] Horizon length
 
 %Controller for system x:
 mpc_x = MpcControl_x(sys_x,Ts,H);
