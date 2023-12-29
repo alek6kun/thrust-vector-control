@@ -52,8 +52,8 @@ classdef MpcControl_z < MpcControlBase
 
             %YALMIP
             %Cost matrices 
-            Q = 300*eye(nx); 
-            R = 0.1*eye(nu);  
+            Q = 500*eye(nx); 
+            R = 0.2*eye(nu);  
 
             %State constraints - not needed? -> altitude = 0?
             %Input constraints for Pavg
@@ -68,12 +68,10 @@ classdef MpcControl_z < MpcControlBase
             %P = dlyap(mpc.A,Q);
 
             %System dynamics
-            %con = (X(:, 2) == mpc.A * X(:, 1) + mpc.B*U(:,1)+ mpc.B*d_est) + (M*U(:,1)<= m); %d_est ici?
-            con = (X(:, 2) == mpc.A * X(:, 1) + mpc.B*U(:,1)) + (M*U(:,1)<= m); %d_est ici?
+            con = (X(:, 2) == mpc.A * X(:, 1) + mpc.B*U(:,1)+ mpc.B*d_est) + (M*U(:,1)<= m); %d_est ici?
             obj = (U(:, 1)-u_ref)' * R * (U(:, 1)-u_ref);
             for i = 1:N-1
-                %con = con + (X(:, i+1) == mpc.A * X(:, i) + mpc.B * U(:, i) + mpc.B*d_est); %System dynamics
-                con = con + (X(:, i+1) == mpc.A * X(:, i) + mpc.B * U(:, i)); %System dynamics
+                con = con + (X(:, i+1) == mpc.A * X(:, i) + mpc.B * U(:, i) + mpc.B*d_est); %System dynamics
                 con = con + (M*U(:,i) <= m); %Input constraints
                 obj = obj + (X(:, i)-x_ref)' * Q * (X(:, i)- x_ref) + (U(:, i)- u_ref)' * R * (U(:, i)- u_ref); % Cost function
             end
