@@ -43,8 +43,8 @@ classdef MpcControl_roll < MpcControlBase
             m = [deg2rad(20); deg2rad(20)];
             %YALMIP
             %Cost matrices 
-            Q = 30*eye(nx); %nx = 2
-            R = 0.5*eye(nu); %nu = 1
+            Q = 15*eye(nx); %nx = 2
+            R = 0.05*eye(nu); %nu = 1
 
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K = -K; 
