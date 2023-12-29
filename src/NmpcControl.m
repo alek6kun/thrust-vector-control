@@ -42,29 +42,25 @@ classdef NmpcControl < handle
             x0_sym  = SX.sym('x0_sym', nx, 1);  % initial state
             ref_sym = SX.sym('ref_sym', 4, 1);  % target position
             
-            % Default state and input constraints (take 10000 instead of
-            % inf)
+            % Default state and input constraints
             ubx = inf(nx, 1);
             ubx(4) = deg2rad(75); % Default state constraint for alpha
             ubx(5) = deg2rad(75); % Default state constraint for beta
             lbx = -inf(nx, 1);
             lbx(4) = deg2rad(-75); % Default state constraint for alpha
             lbx(5) = deg2rad(-75); % Default state constraint for beta
-            ubu = [deg2rad(1); deg2rad(15); 80; 20];
+            ubu = [deg2rad(15); deg2rad(15); 80; 20];
             lbu = [deg2rad(-15); deg2rad(-15); 50; -20];
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % Q and R hyperparameters for cost.
-            Q = eye(nx);  Q(1,1) = 30; Q(2,2) = 30; Q(4,4) = 10; Q(5,5) = 10;
-            Q(6,6) = 20; Q(10,10) = 50; Q(11,11) = 50; Q(12,12) = 500; 
-            R = diag([5,5,0.1,0.1]);
+            Q = diag([30,30,1,10,10,20,1,1,1,50,50,500]);
+            R = diag([5,5,0.001,0.001]);
 
             % The reference state where we want to be. No acceleration, and
             % at the target position.
             X_ref = [SX.zeros(5,1); ref_sym(4,1); SX.zeros(3,1); ref_sym(1:3,1)];
-            X_ref(12) = X_ref(12);
-            U_ref = [SX.zeros(4,1)];
 
             % Computing the terminal cost : first we linearize and then we
             % find the optimal LQR cost. We linearize around the trim
@@ -81,15 +77,26 @@ classdef NmpcControl < handle
             % % We intialize the cost
             % cost = X_sym(:,N)'*P*X_sym(:,N);
             cost = 0;
+
             % Equality constraints (Casadi SX), each entry == 0
             eq_constr = X_sym(:,1) - x0_sym;
-            
+            h = rocket.Ts;
             for i = 1:N-1
                 cost = cost + ...
                 (X_sym(:,i)-X_ref(:,1))'*Q*(X_sym(:,i)-X_ref(:,1))...
-                + (U_sym(:,i)-U_ref(:,1))'*R*(U_sym(:,i)-U_ref(:,1));
-                st_next_euler = X_sym(:,i) + (rocket.Ts*rocket.f(X_sym(:,i),U_sym(:,i)));
-                eq_constr = [eq_constr; X_sym(:,i+1)-st_next_euler];
+                + U_sym(:,i)'*R*U_sym(:,i);
+
+                % Integration using the Runge-Kutta approach
+                % k1 = rocket.f(X_sym(:,i),U_sym(:,i));
+                % k2 = rocket.f(X_sym(:,i) + 0.5*h*k1,U_sym(:,i));
+                % k3 = rocket.f(X_sym(:,i) + 0.5*h*k2,U_sym(:,i));
+                % k4 = rocket.f(X_sym(:,i) + h*k3,U_sym(:,i));
+                % st_next = X_sym(:,i) + h/6*(k1 + 2*(k2+ k3) + k4);
+
+                % Integration using the Euler approach
+                st_next = X_sym(:,i) + h*rocket.f(X_sym(:,i),U_sym(:,i));
+
+                eq_constr = [eq_constr; X_sym(:,i+1)-st_next];
             end
             % Inequality constraints (Casadi SX), each entry <= 0
             ineq_constr = [];

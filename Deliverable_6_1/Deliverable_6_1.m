@@ -1,8 +1,7 @@
 addpath(fullfile('..', 'src'));
-addpath(fullfile('..', 'Deliverable_4_1'))
-%close all
-%clear all
-%clc
+close all
+clear all
+clc
 
 %% Intialisations
 Ts = 1/20;

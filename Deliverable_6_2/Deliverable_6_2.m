@@ -20,19 +20,19 @@ rocket.anim_rate = 2.0;
 
 %% Delay which causes drop in performance
 
-rocket.delay = 2;
-[T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
-
-ph1 = rocket.plotvis(T, X, U, Ref);
-ph1.fig.Name = '50ms delay causing drop in performance';
-
-%% Delay which causes unstability
-
 rocket.delay = 3;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
 
+ph1 = rocket.plotvis(T, X, U, Ref);
+ph1.fig.Name = '75ms delay causing drop in performance';
+
+%% Delay which causes unstability
+
+rocket.delay = 4;
+[T, X, U, Ref] = rocket.simulate(x0, Tf, @nmpc.get_u, ref);
+
 ph2 = rocket.plotvis(T, X, U, Ref);
-ph2.fig.Name = '75ms delay causing unstability';
+ph2.fig.Name = '100ms delay causing unstability';
 
 %% Partially compensated delay
 
