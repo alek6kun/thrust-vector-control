@@ -52,7 +52,7 @@ classdef MpcControl_z < MpcControlBase
 
             %YALMIP
             %Cost matrices 
-            Q = 500*eye(nx); 
+            Q = 300*eye(nx); 
             R = 0.1*eye(nu);  
 
             %State constraints - not needed? -> altitude = 0?
@@ -68,10 +68,12 @@ classdef MpcControl_z < MpcControlBase
             %P = dlyap(mpc.A,Q);
 
             %System dynamics
-            con = (X(:, 2) == mpc.A * X(:, 1) + mpc.B*U(:,1)+ mpc.B*d_est) + (M*U(:,1)<= m); %d_est ici?
+            %con = (X(:, 2) == mpc.A * X(:, 1) + mpc.B*U(:,1)+ mpc.B*d_est) + (M*U(:,1)<= m); %d_est ici?
+            con = (X(:, 2) == mpc.A * X(:, 1) + mpc.B*U(:,1)) + (M*U(:,1)<= m); %d_est ici?
             obj = (U(:, 1)-u_ref)' * R * (U(:, 1)-u_ref);
             for i = 1:N-1
-                con = con + (X(:, i+1) == mpc.A * X(:, i) + mpc.B * U(:, i) + mpc.B*d_est); %System dynamics
+                %con = con + (X(:, i+1) == mpc.A * X(:, i) + mpc.B * U(:, i) + mpc.B*d_est); %System dynamics
+                con = con + (X(:, i+1) == mpc.A * X(:, i) + mpc.B * U(:, i)); %System dynamics
                 con = con + (M*U(:,i) <= m); %Input constraints
                 obj = obj + (X(:, i)-x_ref)' * Q * (X(:, i)- x_ref) + (U(:, i)- u_ref)' * R * (U(:, i)- u_ref); % Cost function
             end
@@ -122,8 +124,9 @@ classdef MpcControl_z < MpcControlBase
             m = [80+56.6667; -50+56.6667];
             
             con = [M*us <= m ,...
-                    xs == mpc.A*xs + mpc.B*us,...
-                    ref == mpc.C*xs + mpc.D];
+                    xs == mpc.A*xs + mpc.B*(us+d_est),...
+                    ref == mpc.C*xs + mpc.D*d_est];
+            %DANS THEORIE???
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -154,7 +157,8 @@ classdef MpcControl_z < MpcControlBase
             A_bar = [mpc.A, mpc.B; zeros(1,nx),ones(1)]; %dist E 1xnSteps
             B_bar = [mpc.B;zeros(1,nu)];
             C_bar = [mpc.C,zeros(size(mpc.C,1),1)]; %no C_d because no d_k in correction term
-            L = -place(A_bar',C_bar',[0.05,0.15,0.25])'; %0.5,0.6,0.7 are the poles
+            L = -place(A_bar',C_bar',[0.3,0.4,0.5])'; %0.5,0.6,0.7 are the poles
+            %L = -place(A_bar',C_bar',[-0.05,0,-0.05])';
             %higher poles -> more damping and faster convergence
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
