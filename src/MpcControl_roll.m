@@ -40,11 +40,11 @@ classdef MpcControl_roll < MpcControlBase
              %gamma
             %Input constraints for roll
             M = [1;-1];
-            m = [deg2rad(20); deg2rad(20)];
+            m = [20; 20];
             %YALMIP
             %Cost matrices 
-            Q = 15*eye(nx); %nx = 2
-            R = 0.05*eye(nu); %nu = 1
+            Q = diag([10,20]); %nx = 2
+            R = 0.001*eye(nu); %nu = 1
 
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K = -K; 

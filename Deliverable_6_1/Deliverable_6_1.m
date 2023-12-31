@@ -66,6 +66,9 @@ mpc_roll = MpcControl_roll(sys_roll,Ts,H);
 %Merge fous sub-system controllers into one full-system controller
 mpc = rocket.merge_lin_controllers(xs,us,mpc_x,mpc_y,mpc_z,mpc_roll);
 
+roll_max = deg2rad(50);
+ref = @(t_, x_) ref_TVC(t_, roll_max);
+
 %Simulate
 Tf = 30;
 [T, X, U, Ref] = rocket.simulate(x0, Tf, @mpc.get_u, ref);

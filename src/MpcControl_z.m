@@ -52,13 +52,13 @@ classdef MpcControl_z < MpcControlBase
 
             %YALMIP
             %Cost matrices 
-            Q = 500*eye(nx); 
-            R = 0.2*eye(nu);  
+            Q = diag([10,20]); 
+            R = 0.001*eye(nu);  
 
             %State constraints - not needed? -> altitude = 0?
             %Input constraints for Pavg
             M = [1;-1];
-            m = [80+56.6667; -50+56.6667]; %Premier - ou +?
+            m = [23.3333; 6.6667]; %Premier - ou +?
 
             % LQR controller for unconstrained system
             [~,P,~] = dlqr(mpc.A,mpc.B,Q,R);
