@@ -47,10 +47,10 @@ mpc_z = MpcControl_z(sys_z, Ts, H);
 U_opt(:,end+1) = NaN;
 %X_opt = X_opt
 U_opt = U_opt + us(3);
-%Closed-Loop
+%Open-Loop
 ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_z, xs, us);
 
-%Open-Loop
+%Closed-Loop
 [T, X_sub, U_sub] = rocket.simulate_f(sys_z, z_z, Tf, @mpc_z.get_u, 0);
 ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_z, xs, us);
 
@@ -64,10 +64,10 @@ mpc_roll = MpcControl_roll(sys_roll, Ts, H);
 U_opt(:,end+1) = NaN;
 %X_opt = X_opt
 %U_opt = U_opt;
-%Closed-Loop
+%Open-Loop
 ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_roll, xs, us);
 
-%Open-Loop
+%Closed-Loop
 [T, X_sub, U_sub] = rocket.simulate_f(sys_roll, roll_roll, Tf, @mpc_roll.get_u, 0);
 ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_roll, xs, us);
 

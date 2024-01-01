@@ -26,7 +26,6 @@ ref_y = -4;
 mpc_y = MpcControl_x(sys_y, Ts, H);
 [T, X_sub, U_sub] = rocket.simulate_f(sys_y, x_y, Tf, @mpc_y.get_u, ref_y);
 %ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_y, xs, us, ref_y);
-
 %z-component
 z_z = [0;0];
 ref_z = -4;
@@ -36,10 +35,10 @@ mpc_z = MpcControl_z(sys_z, Ts, H);
 [u, T_opt, X_opt, U_opt] = mpc_z.get_u(z_z);
 U_opt(:,end+1) = NaN;
 U_opt = U_opt + us(3);
-ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_z, xs, us, ref_z); 
+ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_z, xs, us); % Plot as usual
 
 %Closed-Loop
-[T, X_sub, U_sub] = rocket.simulate_f(sys_z, z_z, Tf, @mpc_z.get_u, ref_z);
+[T, X sub, U_sub] = rocket.simulate f(sys_z, x0, Tf, @mpc_z.get_u, ref_z);
 ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_z, xs, us, ref_z);
 
 
@@ -51,9 +50,9 @@ ref_roll = deg2rad(35);
 mpc_roll = MpcControl_roll(sys_roll, Ts, H);
 [T, X_sub, U_sub] = rocket.simulate_f(sys_roll, roll_roll, Tf, @mpc_roll.get_u, ref_roll);
 %Closed-Loop
-%ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_z, xs, us, ref_z);
+ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_z, xs, us, ref_z);
 
 %Open-Loop
 [T, X_sub, U_sub] = rocket.simulate_f(sys_z, z_z, Tf, @mpc_z.get_u, ref_z);
-%ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_z, xs, us, ref_z);
+ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_z, xs, us, ref_z);
 

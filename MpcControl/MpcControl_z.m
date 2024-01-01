@@ -54,10 +54,8 @@ classdef MpcControl_z < MpcControlBase
             %Cost matrices 
             %Q = 500*eye(nx); 
             %R = 0.2*eye(nu);  
-            Q = 1*eye(nx); Q(1,1) = 25; Q(2,2) = 35;
-            R = 1.5*eye(nu); 
-
-            %State constraints - not needed? -> altitude = 0?
+            Q = 500*eye(nx); 
+            R = 0.0001*eye(nu); 
             %Input constraints for Pavg
             M = [1;-1];
             m = [23.3333; 6.6667];
@@ -70,7 +68,7 @@ classdef MpcControl_z < MpcControlBase
             %P = dlyap(mpc.A,Q);
 
             %System dynamics
-            con = (X(:, 2) == mpc.A * X(:, 1) + mpc.B*U(:,1)+ mpc.B*d_est) + (M*U(:,1)<= m); %d_est ici?
+            con = (X(:, 2) == mpc.A * X(:, 1) + mpc.B*U(:,1)+ mpc.B*d_est) + (M*U(:,1)<= m); 
             obj = (U(:, 1)-u_ref)' * R * (U(:, 1)-u_ref);
             for i = 1:N-1
                 con = con + (X(:, i+1) == mpc.A * X(:, i) + mpc.B * U(:, i) + mpc.B*d_est); %System dynamics
@@ -122,11 +120,12 @@ classdef MpcControl_z < MpcControlBase
 
             M = [1;-1];
             m = [23.3333; 6.6667];
+            Rs = 1;
+
+            %There are no state constraints
             
-            con = [M*us <= m ,...
-                    xs == mpc.A*xs + mpc.B*(us+d_est),...
-                    ref == mpc.C*xs + mpc.D*d_est];
-            %DANS THEORIE???
+            con = [M*us <= m ,xs == mpc.A*xs + mpc.B*(us+d_est),ref == mpc.C*xs + mpc.D*d_est];
+            obj = us'*Rs*us;
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -152,7 +151,7 @@ classdef MpcControl_z < MpcControlBase
             B_bar = [];
             C_bar = [];
             L = [];
-            %%%%REVOIR! 
+
             %%Bd = B because Ax + Bu + Bd
             A_bar = [mpc.A, mpc.B; zeros(1,nx),ones(1)]; %dist E 1xnSteps
             B_bar = [mpc.B;zeros(1,nu)];

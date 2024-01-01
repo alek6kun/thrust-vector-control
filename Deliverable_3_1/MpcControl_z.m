@@ -55,7 +55,7 @@ classdef MpcControl_z < MpcControlBase
             %Cost matrices 
             Q = 1*eye(nx); Q(1,1) = 25; Q(2,2) = 35;
             R = 1.5*eye(nu); 
-            %State constraints - not needed? -> altitude = 0?
+
             %Input constraints for Pavg
             M = [1;-1];
             m = [23.3333; 6.6667];
@@ -79,8 +79,9 @@ classdef MpcControl_z < MpcControlBase
                 end
             end
             [Ff,ff] = double(Xf);
+            
             %Plot maximum invariant set
-            % Plot maximum invariant set
+
             figure;
             
             Xf.plot();
