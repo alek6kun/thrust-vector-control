@@ -53,19 +53,17 @@ classdef MpcControl_z < MpcControlBase
 
             %YALMIP
             %Cost matrices 
-            Q = 1*eye(nx); %2 because that's the number of states
-            %R = 1;
-            R = 0.5*eye(nu); %=1 in our case 
-
+            Q = 1*eye(nx); Q(1,1) = 25; Q(2,2) = 35;
+            R = 1.5*eye(nu); 
             %State constraints - not needed? -> altitude = 0?
             %Input constraints for Pavg
             M = [1;-1];
-            m = [80+56.6667; -50+56.6667];
+            m = [23.3333; 6.6667];
 
             % LQR controller for unconstrained system
-            F = [0 1; 0 -1];
-            f = [Inf; Inf];
-            [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
+            F = [1 1; -1 -1];
+            f = [Inf;Inf];
+            [K,P,~] = dlqr(mpc.A,mpc.B,Q,R);
             K = -K; 
 
             %Compute maximum invariant set
@@ -81,18 +79,26 @@ classdef MpcControl_z < MpcControlBase
                 end
             end
             [Ff,ff] = double(Xf);
-
+            %Plot maximum invariant set
+            % Plot maximum invariant set
+            figure;
+            
+            Xf.plot();
+            xlabel('State 1 : v_z [m/s]');
+            ylabel('State 2 : z [m]');
+            title('Maximum Invariant Set for z');
+            legend('Invariant Set for z');
             %System dynamics
            
             con = (X(:, 2) == mpc.A * X(:, 1) + mpc.B*U(:,1)) + (M*U(:,1)<= m);
             obj = U(:, 1)' * R * U(:, 1);
-            for i = 2:N-1
+            for i = 1:N-1
                 con = con + (X(:, i+1) == mpc.A * X(:, i) + mpc.B * U(:, i)); %System dynamics
                 con = con + (F*X(:,i) <= f) + (M*U(:,i) <= m); %Input constraints
                 obj = obj + X(:, i)' * Q * X(:, i) + U(:, i)' * R * U(:, i); % Cost function
             end
             con = con + (Ff*X(:,N) <= ff);
-            obj = obj + X(:,N)'*Qf*X(:,N);
+            obj = obj + X(:,N)'*P*X(:,N);
 
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

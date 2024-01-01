@@ -32,8 +32,8 @@ classdef MpcControl_x < MpcControlBase
             R = 0.5*eye(nu); 
             M = [1;-1];
             m = [max_B_dif; max_B_dif];
-
-                       % Compute LQR controller for unconstrained system
+            disp("hello");
+           % Compute LQR controller for unconstrained system
             F = [0 1 0 0; 0 -1 0 0];
             f = [beta_max; beta_max];
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
