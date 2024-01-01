@@ -52,10 +52,13 @@ classdef MpcControl_z < MpcControlBase
 
             %YALMIP
             %Cost matrices 
-            %Q = 500*eye(nx); 
-            %R = 0.2*eye(nu);  
             Q = 500*eye(nx); 
-            R = 0.0001*eye(nu); 
+            R = 0.0001*eye(nu);  
+            % Q = diag([25,35]);
+            % R = 1.5*eye(nu); 
+
+            %State constraints - not needed? -> altitude = 0?
+
             %Input constraints for Pavg
             M = [1;-1];
             m = [23.3333; 6.6667];

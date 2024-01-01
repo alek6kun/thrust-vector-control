@@ -55,7 +55,7 @@ classdef NmpcControl < handle
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             % Q and R hyperparameters for cost.
-            Q = diag([30,30,1,10,10,20,1,1,1,50,50,500]);
+            Q = diag([30,30,1,10,10,20,1,1,500,50,50,500]);
             R = diag([5,5,0.001,0.001]);
 
             % The reference state where we want to be. No acceleration, and
