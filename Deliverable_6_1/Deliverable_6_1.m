@@ -14,7 +14,7 @@ x0 = zeros(12,1);
 
 % Evaluate once and plot optimal open−loop trajectory,
 % pad last input to get consistent size with time and state
-ref4 = [2; 2; 10; deg2rad(40)];
+ref4 = [2; 2; 5; deg2rad(40)];
 [u, T_opt, X_opt, U_opt] = nmpc.get_u(x0, ref4);
 U_opt(:,end+1) = nan;
 ph1 = rocket.plotvis(T_opt, X_opt, U_opt, ref4);
