@@ -1,8 +1,9 @@
 %% To Do 4.1
 clc
-clear all
+clear
 close all
 addpath(fullfile('..', 'src'));
+addpath(fullfile('..', 'MpcControl/'));
 
 Ts = 1/20;
 rocket = Rocket(Ts);

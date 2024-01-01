@@ -1,4 +1,4 @@
-classdef MpcControl_y < MpcControlBase
+classdef MpcControl_y_bad < MpcControlBase
     
     methods
         % Design a YALMIP optimizer object that takes a steady-state state

@@ -1,10 +1,8 @@
 addpath(fullfile('..', 'src'));
-
-%close all
-%clear all
-%clc
-
-%% TODO: This file should produce all the plots for the deliverable
+addpath(fullfile('..', 'MpcControl/'));
+close all
+clear
+clc
 
 %% TODO: This file should produce all the plots for the deliverable
 

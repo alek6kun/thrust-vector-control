@@ -1,7 +1,7 @@
 addpath(fullfile('..', 'src'));
-%close all
-%clear all
-%clc
+close all
+clear
+clc
 
 %% Initialisations
 Ts = 1/40; % Higher sampling rate for this part!

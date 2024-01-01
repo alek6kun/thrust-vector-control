@@ -1,6 +1,6 @@
 addpath(fullfile('..', 'src'));
 close all
-clear all
+clear
 clc
 
 %% Intialisations

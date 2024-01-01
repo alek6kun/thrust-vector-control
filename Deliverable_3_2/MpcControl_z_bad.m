@@ -1,4 +1,4 @@
-classdef MpcControl_z < MpcControlBase
+classdef MpcControl_z_bad < MpcControlBase
     properties
         A_bar, B_bar, C_bar % Augmented system for disturbance rejection
         L                   % Estimator gain for disturbance rejection
