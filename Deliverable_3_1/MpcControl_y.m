@@ -34,7 +34,7 @@ classdef MpcControl_y < MpcControlBase
 
             % Compute LQR controller for unconstrained system
             F = [0 1 0 0; 0 -1 0 0];
-            f = [beta_max; beta_max];
+            f = [alpha_max; alpha_max];
             [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
             K = -K; 
 
@@ -51,6 +51,27 @@ classdef MpcControl_y < MpcControlBase
                 end
             end
             [Ff,ff] = double(Xf);
+            % Plot maximum invariant set
+            figure;
+            Xf.projection(1:2).plot();
+            xlabel('State 1 : α [rad]');
+            ylabel('State 2 : ωx [rad/s]');
+            title('Maximum Invariant Set Projection for y (α/ωx)');
+            legend('Invariant Set for y (β/ωx)');
+
+            figure;
+            Xf.projection(2:3).plot();
+            xlabel('State 1 : Vy [m/s]');
+            ylabel('State 2 : α [rad] ');
+            title('Maximum Invariant Set Projection for y (Vy/α)');
+            legend('Invariant Set for y (Vy/α)');
+
+            figure;
+            Xf.projection(3:4).plot();
+            xlabel('State 1 : y [m]');
+            ylabel('State 2 : Vy [m/s] ');
+            title('Maximum Invariant Set Projection for y (y/Vy)');
+            legend('Invariant Set for y (y/Vy)');
 
             obj = (U(:, 1)-u_ref)' * R * (U(:, 1)-u_ref);
             con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (F*X(:,1) <= f)+ (M*U(:,1)<=m);

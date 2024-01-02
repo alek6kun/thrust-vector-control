@@ -88,6 +88,7 @@ classdef MpcControl_z < MpcControlBase
             ylabel('State 2 : z [m]');
             title('Maximum Invariant Set for z');
             legend('Invariant Set for z');
+            
             %System dynamics
            
             con = (X(:, 2) == mpc.A * X(:, 1) + mpc.B*U(:,1)) + (M*U(:,1)<= m);
