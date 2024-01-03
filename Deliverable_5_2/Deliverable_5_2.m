@@ -1,5 +1,4 @@
 addpath(fullfile('..', 'src'));
-addpath(fullfile('..', 'MpcControl/'));
 close all
 clear
 clc
@@ -14,7 +13,7 @@ sys = rocket.linearize(xs,us); %Linearize the nonlinear model about trim point
 
 [sys_x, sys_y, sys_z, sys_roll] = rocket.decompose(sys,xs,us);
 
-H = 7.0; %[s] Horizon length
+H = 10.0; %[s] Horizon length
 
 %Controller for system x:
 mpc_x = MpcControl_x(sys_x,Ts,H);
@@ -31,7 +30,7 @@ rocket.mass_rate = -0.27;
 
 x0 = [0; 0; 0; 0; 0; 0; 0; 0; 0; 1; 0; 3]; %As documented in the instructions
 ref = [1.2, 0, 3, 0]';
-Tf = 30;
+Tf = 20;
 
 %Testing setup_estimator function
 [T_est, X_est, U_est, Ref_est, Z_hat] = rocket.simulate_est_z(x0, Tf, @mpc.get_u, ref, mpc_z, sys_z);
