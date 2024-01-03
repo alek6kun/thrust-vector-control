@@ -59,10 +59,9 @@ roll_roll = [0;0];
 ref_roll = deg2rad(35);
 mpc_roll = MpcControl_roll(sys_roll, Ts, H);
 %OL
-[u_i, T_opt, X_opt, U_opt] = mpc_roll.get_u(roll_roll, ref_roll);
-U_opt(:,end+1) = NaN;
-%Open-Loop
-ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_roll, xs, us);
+[u_roll, T_opt_roll, X_opt_roll, U_opt_roll] = mpc_roll.get_u(x_roll, ref_roll);
+U_opt_z(:,end+1) = nan;
+ph = rocket.plotvis_sub(T_opt_roll, X_opt_roll, U_opt_roll, sys_roll, xs, us);
 saveas(gcf,'3.2 OL roll.png')
 %CL
 [T, X_sub, U_sub] = rocket.simulate_f(sys_roll, roll_roll, Tf, @mpc_roll.get_u, ref_roll);

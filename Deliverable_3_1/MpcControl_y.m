@@ -25,7 +25,7 @@ classdef MpcControl_y < MpcControlBase
             % Predicted state and input trajectories
             X = sdpvar(nx, N, 'full');
             U = sdpvar(nu, N-1, 'full');
-            Q = eye(nx);
+            Q = 30*eye(nx); Q(1,1) = 20; Q(2,2) = 15;
             R = 0.5*eye(nu);
             alpha_max = deg2rad(10);
             alpha_dif_max = deg2rad(5);

@@ -16,7 +16,7 @@ Tf = 10; % seconds of simulation
 
 %x-component
 mpc_x = MpcControl_x(sys_x, Ts, H);
-x_x = [0,0,0,4].';
+x_x = [0,0,0,3].';
 
 
 %Open-Loop
@@ -31,7 +31,7 @@ ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_x, xs, us);
 saveas(gcf,'Closed-loop x.png')
 %y-component
 mpc_y = MpcControl_y(sys_y, Ts, H);
-x_y = [0,0,0,4].';
+x_y = [0,0,0,3].';
 
 % Account for linearization point
 
