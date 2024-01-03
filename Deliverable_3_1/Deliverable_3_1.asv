@@ -16,22 +16,22 @@ Tf = 10; % seconds of simulation
 
 %x-component
 mpc_x = MpcControl_x(sys_x, Ts, H);
-x_x = [0,0,0,3].';
+x_x = [0,0,0,4].';
 
 
 %Open-Loop
 [u_x, T_opt, X_opt, U_opt] = mpc_x.get_u(x_x);
 U_opt(:,end+1) = NaN;
 ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_x, xs, us);
-saveas(gcf,'Open-loop x.png')
+
 %Closed-Loop
 
 [T, X_sub, U_sub] = rocket.simulate_f(sys_x, x_x, Tf, @mpc_x.get_u, 0);
 ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_x, xs, us);
-saveas(gcf,'Closed-loop x.png')
+
 %y-component
 mpc_y = MpcControl_y(sys_y, Ts, H);
-x_y = [0,0,0,3].';
+x_y = [0,0,0,4].';
 
 % Account for linearization point
 
@@ -39,11 +39,11 @@ x_y = [0,0,0,3].';
 [u_y, T_opt, X_opt, U_opt] = mpc_y.get_u(x_y);
 U_opt(:,end+1) = NaN;
 ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_y, xs, us);
-saveas(gcf,'Open-loop y.png')
+saveas(gcf,'Open-loop x.png')
 %Closed-Loop
 [T, X_sub, U_sub] = rocket.simulate_f(sys_y, x_x, Tf, @mpc_y.get_u, 0);
 ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_y, xs, us);
-saveas(gcf,'Closed-loop y.png')
+saveas(gcf,'O-loop x.png')
 %z-component
 z_z = [0;3];
 mpc_z = MpcControl_z(sys_z, Ts, H);
@@ -66,7 +66,6 @@ roll_roll = [0;deg2rad(30)];
 mpc_roll = MpcControl_roll(sys_roll, Ts, H);
 [u_i, T_opt, X_opt, U_opt] = mpc_roll.get_u(roll_roll);
 U_opt(:,end+1) = NaN;
-
 %Open-Loop
 ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_roll, xs, us);
 

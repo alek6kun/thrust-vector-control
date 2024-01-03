@@ -54,8 +54,6 @@ classdef MpcControl_z < MpcControlBase
             %Cost matrices 
             Q = 500*eye(nx); 
             R = 0.0001*eye(nu);  
-            % Q = diag([25,35]);
-            % R = 1.5*eye(nu); 
 
             %State constraints - not needed? -> altitude = 0?
 

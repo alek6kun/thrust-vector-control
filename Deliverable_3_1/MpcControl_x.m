@@ -28,11 +28,10 @@ classdef MpcControl_x < MpcControlBase
             beta_max = deg2rad(10);
             max_B_dif = deg2rad(5);
             % Define the weight matrices
-            Q = eye(nx);
+            Q = 30*eye(nx); Q(1,1) = 20; Q(2,2) = 15;
             R = 0.5*eye(nu); 
             M = [1;-1];
             m = [max_B_dif; max_B_dif];
-            disp("hello");
            % Compute LQR controller for unconstrained system
             F = [0 1 0 0; 0 -1 0 0];
             f = [beta_max; beta_max];
@@ -52,6 +51,28 @@ classdef MpcControl_x < MpcControlBase
                 end
             end
             [Ff,ff] = double(Xf);
+
+            % Plot maximum invariant set
+            figure;
+            Xf.projection(1:2).plot();
+            xlabel('State 1 : β [rad]');
+            ylabel('State 2 : ωy [rad/s]');
+            title('Maximum Invariant Set Projection for x (β/ωy)');
+            legend('Invariant Set for x (β/ωy)');
+
+            figure;
+            Xf.projection(2:3).plot();
+            xlabel('State 1 : Vx [m/s]');
+            ylabel('State 2 : β [rad] ');
+            title('Maximum Invariant Set Projection for x (Vx/β)');
+            legend('Invariant Set for x (Vx/β)');
+
+            figure;
+            Xf.projection(3:4).plot();
+            xlabel('State 1 : x [m]');
+            ylabel('State 2 : Vx [m/s] ');
+            title('Maximum Invariant Set Projection for x (x/Vx)');
+            legend('Invariant Set for x (x/Vx)');
 
             obj = X(:,1)'*Q*X(:,1) + U(:,1)'*R*U(:,1);
             con = (X(:,2) == mpc.A*X(:,1) + mpc.B*U(:,1)) + (F*X(:,1) <= f)+ (M*U(:,1)<=m);
@@ -85,14 +106,7 @@ classdef MpcControl_x < MpcControlBase
             % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
             obj = [];
             con = [xs == 0, us == 0];
-            %alpha_max=deg2rad(10);
-            %beta_max = deg2rad(10);
-            %Pavg_min = 0.5;          % Minimum average throttle
-            %Pavg_max = 0.8;          % Maximum average throttle
-             % Steady-state conditions and constraints
-            %con = [xs == mpc.A*xs + mpc.B*us, mpc.C*xs == ref, ...
-             %      -alpha_max <= xs(2) <= alpha_max, -beta_max <= xs(3) <= beta_max, ...
-              %     Pavg_min <= us(1) <= Pavg_max];
+
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % Compute the steady-state target
