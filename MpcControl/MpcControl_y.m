@@ -75,9 +75,10 @@ classdef MpcControl_y < MpcControlBase
 
             M = [1;-1];
             m = [deg2rad(5); deg2rad(5)];
-            
-            con = [M*us <= m ,...
-                    xs == mpc.A*xs + mpc.B*us,...
+            Rs = 1;
+
+            obj = us'*Rs*us;
+            con = [M*us <= m ,xs == mpc.A*xs + mpc.B*us,...
                     ref == mpc.C*xs + mpc.D];
             
             
