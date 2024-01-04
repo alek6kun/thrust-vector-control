@@ -36,18 +36,15 @@ classdef MpcControl_roll < MpcControlBase
             obj = 0;
             con = [];
 
-             %State constraints - not needed? -> no constraints on w_z or
-             %gamma
             %Input constraints for roll
             M = [1;-1];
             m = [20; 20];
-            %YALMIP
+
             %Cost matrices 
-            Q = diag([10,20]); %nx = 2
+            Q = diag([20,40]); %nx = 2
             R = 0.001*eye(nu); %nu = 1
 
-            [K,Qf,~] = dlqr(mpc.A,mpc.B,Q,R);
-            K = -K; 
+            [~,P,~] = dlqr(mpc.A,mpc.B,Q,R);
 
             %System dynamics
 
@@ -59,7 +56,7 @@ classdef MpcControl_roll < MpcControlBase
                 con = con + (M*U(:,i) <= m); %Input constraints
                 obj = obj + (X(:, i)-x_ref)' * Q * (X(:, i)- x_ref) + (U(:, i)- u_ref)' * R * (U(:, i)- u_ref); % Cost function
             end
-            obj = obj + (X(:,N)-x_ref)'*Qf*(X(:,N)-x_ref);
+            obj = obj + (X(:,N)-x_ref)'*P*(X(:,N)-x_ref);
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -93,13 +90,15 @@ classdef MpcControl_roll < MpcControlBase
             % You can use the matrices mpc.A, mpc.B, mpc.C and mpc.D
             obj = 0;
             con = [xs == 0, us == 0];
+            Rs= 1;
 
             M = [1;-1];
-            m = [deg2rad(20); deg2rad(20)];
+            m = [20; 20];
             
-            con = [M*us <= m ,...
-                    xs == mpc.A*xs + mpc.B*us,...
+            obj = us'*Rs*us;
+            con = [M*us <= m ,xs == mpc.A*xs + mpc.B*us,...
                     ref == mpc.C*xs + mpc.D];
+
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

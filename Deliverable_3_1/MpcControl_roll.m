@@ -39,7 +39,7 @@ classdef MpcControl_roll < MpcControlBase
             %Input constraints for roll
             M = [1;-1];
             m = [20; 20];
-            %YALMIP
+
             %Cost matrices 
             Q = 1*eye(nx); Q(1,1) = 20; Q(2,2) = 40;
             R = 0.8*eye(nu); 
@@ -63,6 +63,7 @@ classdef MpcControl_roll < MpcControlBase
                 end
             end
             [Ff,ff] = double(Xf);
+
             %Plot maximum invariant set
             figure;
             Xf.plot();
@@ -70,6 +71,7 @@ classdef MpcControl_roll < MpcControlBase
             ylabel('State 2 : gamma [deg]');
             title('Maximum Invariant Set for roll');
             legend('Invariant Set for roll');
+           
             %System dynamics
             con = (X(:, 2) == mpc.A * X(:, 1) + mpc.B*U(:,1)) + (M*U(:,1)<= m);
             obj = U(:, 1)' * R * U(:, 1);

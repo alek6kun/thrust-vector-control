@@ -50,12 +50,9 @@ classdef MpcControl_z < MpcControlBase
             obj = 0;
             con = [];
 
-            %YALMIP
             %Cost matrices 
             Q = 500*eye(nx); 
             R = 0.0001*eye(nu);  
-
-            %State constraints - not needed? -> altitude = 0?
 
             %Input constraints for Pavg
             M = [1;-1];
@@ -63,10 +60,6 @@ classdef MpcControl_z < MpcControlBase
 
             % LQR controller for unconstrained system
             [~,P,~] = dlqr(mpc.A,mpc.B,Q,R);
-            %K = -K; 
-            %ENLEVER?
-
-            %P = dlyap(mpc.A,Q);
 
             %System dynamics
             con = (X(:, 2) == mpc.A * X(:, 1) + mpc.B*U(:,1)+ mpc.B*d_est) + (M*U(:,1)<= m); 
@@ -124,9 +117,11 @@ classdef MpcControl_z < MpcControlBase
             Rs = 1;
 
             %There are no state constraints
-            
-            con = [M*us <= m ,xs == mpc.A*xs + mpc.B*(us+d_est),ref == mpc.C*xs + mpc.D*d_est];
+
             obj = us'*Rs*us;
+            con = [M*us <= m ,xs == mpc.A*xs + mpc.B*(us+d_est),...
+                   ref == mpc.C*xs + mpc.D*d_est];
+
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -154,12 +149,11 @@ classdef MpcControl_z < MpcControlBase
             L = [];
 
             %%Bd = B because Ax + Bu + Bd
-            A_bar = [mpc.A, mpc.B; zeros(1,nx),ones(1)]; %dist E 1xnSteps
+            A_bar = [mpc.A, mpc.B; zeros(1,nx),ones(1)]; 
             B_bar = [mpc.B;zeros(1,nu)];
             C_bar = [mpc.C,zeros(size(mpc.C,1),1)]; %no C_d because no d_k in correction term
-            L = -place(A_bar',C_bar',[0.3,0.4,0.5])'; %0.5,0.6,0.7 are the poles
-            %L = -place(A_bar',C_bar',[-0.05,0,-0.05])';
-            %higher poles -> more damping and faster convergence
+            L = -place(A_bar',C_bar',[0.3,0.4,0.5])'; 
+
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         end
