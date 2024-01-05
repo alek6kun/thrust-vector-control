@@ -15,37 +15,36 @@ H = 10; % Horizon length in seconds mpc x = MpcControl x(sys x, Ts, H);
 Tf = 10; % seconds of simulation
 
 %%%%%%%%%%%%%%%%%%%%%%%%% x-component %%%%%%%%%%%%%%%%%%%%%%%%%
-%mpc_x = MpcControl_x(sys_x, Ts, H);
-%x_x = [0,0,0,3].';
-
+mpc_x = MpcControl_x(sys_x, Ts, H);
+x_x = [0,0,0,3].';
 
 %Open-Loop
-%[u_x, T_opt, X_opt, U_opt] = mpc_x.get_u(x_x);
-%U_opt(:,end+1) = NaN;
-%ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_x, xs, us);
-%saveas(gcf,'Open-loop x.png')
+[u_x, T_opt, X_opt, U_opt] = mpc_x.get_u(x_x);
+U_opt(:,end+1) = NaN;
+ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_x, xs, us);
+saveas(gcf,'Open-loop x.png')
 
 %Closed-Loop
-%[T, X_sub, U_sub] = rocket.simulate_f(sys_x, x_x, Tf, @mpc_x.get_u, 0);
-%ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_x, xs, us);
-%saveas(gcf,'Closed-loop x.png')
+[T, X_sub, U_sub] = rocket.simulate_f(sys_x, x_x, Tf, @mpc_x.get_u, 0);
+ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_x, xs, us);
+saveas(gcf,'Closed-loop x.png')
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%% y-component %%%%%%%%%%%%%%%%%%%%%%%%%
 
-%mpc_y = MpcControl_y(sys_y, Ts, H);
-%x_y = [0,0,0,3].';
+mpc_y = MpcControl_y(sys_y, Ts, H);
+x_y = [0,0,0,3].';
 
 %Open-Loop
-%[u_y, T_opt, X_opt, U_opt] = mpc_y.get_u(x_y);
-%U_opt(:,end+1) = NaN;
-%ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_y, xs, us);
-%saveas(gcf,'Open-loop y.png')
+[u_y, T_opt, X_opt, U_opt] = mpc_y.get_u(x_y);
+U_opt(:,end+1) = NaN;
+ph = rocket.plotvis_sub(T_opt, X_opt, U_opt, sys_y, xs, us);
+saveas(gcf,'Open-loop y.png')
 
 %Closed-Loop
-%[T, X_sub, U_sub] = rocket.simulate_f(sys_y, x_x, Tf, @mpc_y.get_u, 0);
-%ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_y, xs, us);
-%saveas(gcf,'Closed-loop y.png')
+[T, X_sub, U_sub] = rocket.simulate_f(sys_y, x_x, Tf, @mpc_y.get_u, 0);
+ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_y, xs, us);
+saveas(gcf,'Closed-loop y.png')
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%% z-component %%%%%%%%%%%%%%%%%%%%%%%%%

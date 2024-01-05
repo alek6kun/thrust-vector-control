@@ -82,13 +82,13 @@ classdef MpcControl_z < MpcControlBase
             %Plot maximum invariant set
 
             figure;
-            
             Xf.plot();
             xlabel('State 1 : v_z [m/s]');
             ylabel('State 2 : z [m]');
             title('Maximum Invariant Set for z');
             legend('Invariant Set for z');
             saveas(gcf,'Terminal Set z.png')
+
             %System dynamics
            
             con = (X(:, 2) == mpc.A * X(:, 1) + mpc.B*U(:,1)) + (M*U(:,1)<= m);
