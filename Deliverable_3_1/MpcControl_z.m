@@ -28,7 +28,6 @@ classdef MpcControl_z < MpcControlBase
             N = N_segs + 1;      % Last index in 1-based Matlab indexing
             
             [nx, nu] = size(mpc.B);
-            disp(nu);
             
             % Targets (Ignore this before Todo 3.3)
             x_ref = sdpvar(nx, 1);
@@ -53,8 +52,8 @@ classdef MpcControl_z < MpcControlBase
 
             %YALMIP
             %Cost matrices 
-            Q = 1*eye(nx); Q(1,1) = 25; Q(2,2) = 35;
-            R = 1.5*eye(nu); 
+            Q = 1*eye(nx); Q(1,1) = 30; Q(2,2) = 25;
+            R = 0.1*eye(nu); 
 
             %Input constraints for Pavg
             M = [1;-1];
@@ -89,7 +88,7 @@ classdef MpcControl_z < MpcControlBase
             ylabel('State 2 : z [m]');
             title('Maximum Invariant Set for z');
             legend('Invariant Set for z');
-            
+            saveas(gcf,'Terminal Set z.png')
             %System dynamics
            
             con = (X(:, 2) == mpc.A * X(:, 1) + mpc.B*U(:,1)) + (M*U(:,1)<= m);
