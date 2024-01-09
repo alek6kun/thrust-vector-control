@@ -1,4 +1,5 @@
 addpath(fullfile('..', 'src'));
+addpath(fullfile('..', 'MpcControl/'));
 close all
 clear
 clc
@@ -56,7 +57,7 @@ sys = rocket.linearize(xs,us);
 
 H = 2; %[s] Horizon length
 
-%Controller for system x:
+% Setup controllers
 mpc_x = MpcControl_x(sys_x,Ts,H);
 mpc_y = MpcControl_y(sys_y,Ts,H);
 mpc_z = MpcControl_z(sys_z,Ts,H);

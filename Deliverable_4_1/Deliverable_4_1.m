@@ -1,4 +1,3 @@
-%% To Do 4.1
 clc
 clear
 close all

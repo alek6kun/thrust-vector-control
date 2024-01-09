@@ -4,7 +4,7 @@ close all
 clear
 clc
 
-%% TODO: This file should produce all the plots for the deliverable
+%% Initialisations
 
 Ts = 1/20; % Sample time
 rocket = Rocket(Ts);
@@ -14,7 +14,7 @@ sys = rocket.linearize(xs, us);
 H = 10; % Horizon length in seconds mpc x = MpcControl x(sys x, Ts, H);
 Tf = 10; % seconds of simulation
 
-%%%%%%%%%%%%%%%%%%%%%%% x-component %%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%% x-component %%%%%%%%%%%%%%%%%%%%%%%
 
 x_x = [0;0;0;0];
 ref_x = -4;
@@ -30,7 +30,7 @@ ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_x, xs, us, ref_x);
 saveas(gcf,'3.2 CL x.png')
 
 
-%%%%%%%%%%%%%%%%%%%%%%% y-component %%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%% y-component %%%%%%%%%%%%%%%%%%%%%%%
 
 
 x_y = [0;0;0;0];
@@ -47,7 +47,7 @@ ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_y, xs, us, ref_y);
 saveas(gcf,'3.2 CL y.png')
 
 
-%%%%%%%%%%%%%%%%%%%%%%% z-component %%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%% z-component %%%%%%%%%%%%%%%%%%%%%%%
 
 z_z = [0;0];
 ref_z = -4;
@@ -64,7 +64,7 @@ saveas(gcf,'3.2 OL z.png')
 ph = rocket.plotvis_sub(T, X_sub, U_sub, sys_z, xs, us, ref_z);
 saveas(gcf,'3.2 CL z.png')
 
-%%%%%%%%%%%%%%%%%%%%%%% roll-component %%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%% roll-component %%%%%%%%%%%%%%%%%%%%%%%
 
 roll_roll = [0;0];
 ref_roll = deg2rad(35);

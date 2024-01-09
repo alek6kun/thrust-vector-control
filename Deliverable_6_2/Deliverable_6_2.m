@@ -8,7 +8,7 @@ Ts = 1/40; % Higher sampling rate for this part!
 
 % Define NMPC
 rocket = Rocket(Ts);
-H = 3; % Horizon length in seconds
+H = 2; % Horizon length in seconds
 nmpc = NmpcControl(rocket, H);
 
 

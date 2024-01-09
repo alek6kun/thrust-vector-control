@@ -4,7 +4,7 @@ close all
 clear
 clc
 
-%% TODO: This file should produce all the plots for the deliverable
+%% Initialisations
 
 Ts = 1/20;
 rocket = Rocket(Ts);
@@ -13,10 +13,11 @@ rocket = Rocket(Ts);
 sys = rocket.linearize(xs,us); 
 
 [sys_x, sys_y, sys_z, sys_roll] = rocket.decompose(sys,xs,us);
-Tf = 10;
+Tf = 17;
 H = 7; %[s] Horizon length
 rocket.anim_rate = 10; %increase this to make animation faster
 
+% Setup MPC solvers
 mpc_x = MpcControl_x(sys_x,Ts,H);
 mpc_y = MpcControl_y(sys_y,Ts,H);
 mpc_z = MpcControl_z(sys_z,Ts,H);
@@ -31,10 +32,20 @@ rocket.mass_rate = -0.27;
 x0 = [zeros(1, 9), 1 0 3]';
 ref = [1.2, 0, 3, 0]';
 
-%Testing setup_estimator function
-[T_est, X_est, U_est, Ref_est, Z_hat] = rocket.simulate_est_z(x0, Tf, @mpc.get_u, ref, mpc_z, sys_z);
-[T_no_est, X_no_est, U_no_est, Ref_no_est] = rocket.simulate(x0, Tf, @mpc.get_u, ref);
+%% Simulation and plot with estimator 
+
+[T_est, X_est, U_est, Ref_est, Z_hat] = ...
+    rocket.simulate_est_z(x0, Tf, @mpc.get_u, ref, mpc_z, sys_z);
 
 ph_est = rocket.plotvis(T_est,X_est,U_est,Ref_est);
-ph_est.fig.Name = 'Merged lin. MPC in nonlinear simulation with estimator'; %set figure title
+ph_est.fig.Name = 'Merged lin. MPC in nonlinear simulation with estimator';
 saveas(gcf,'5.2 with estimator.png')
+
+%% Simulation an plot without estimator
+
+[T_no_est, X_no_est, U_no_est, Ref_no_est] = ...
+    rocket.simulate(x0, Tf, @mpc.get_u, ref);
+
+ph_est = rocket.plotvis(T_no_est, X_no_est, U_no_est, Ref_no_est);
+ph_est.fig.Name = 'Merged lin. MPC in nonlinear simulation without estimator';
+saveas(gcf,'5.2 without estimator.png')
