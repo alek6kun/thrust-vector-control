@@ -45,4 +45,4 @@ Tf = 30;
 rocket.anim_rate = 10; %increase this to make animation faster
 ph = rocket.plotvis(T,X,U,Ref);
 ph.fig.Name = 'Merged lin. MPC in nonlinear simulation'; %set figure title
-saveas(gcf,'4.1 plot.png')
+

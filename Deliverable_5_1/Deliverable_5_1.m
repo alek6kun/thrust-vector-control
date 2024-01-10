@@ -37,7 +37,7 @@ ref = [1.2, 0, 3, 0]';
 
 ph_no_est = rocket.plotvis(T_no_est,X_no_est,U_no_est,Ref_no_est);
 ph_no_est.fig.Name = 'Merged lin. MPC in nonlinear simulation without estimator';
-saveas(gcf,'5.1 without estimator.png')
+
 
 %% Simulation and plot with estimator
 [T_est, X_est, U_est, Ref_est, Z_hat] = ...
@@ -45,4 +45,4 @@ saveas(gcf,'5.1 without estimator.png')
 
 ph_est = rocket.plotvis(T_est,X_est,U_est,Ref_est);
 ph_est.fig.Name = 'Merged lin. MPC in nonlinear simulation with estimator';
-saveas(gcf,'5.1 with estimator.png')
+

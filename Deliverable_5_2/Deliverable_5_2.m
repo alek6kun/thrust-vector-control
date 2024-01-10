@@ -33,14 +33,16 @@ x0 = [zeros(1, 9), 1 0 3]';
 ref = [1.2, 0, 3, 0]';
 
 %% Simulation and plot with estimator 
+
 % Drop input constraints in mpc_control_z for target optimizer if
 % disturbance estimate is too large.
+
 [T_est, X_est, U_est, Ref_est, Z_hat] = ...
     rocket.simulate_est_z(x0, Tf, @mpc.get_u, ref, mpc_z, sys_z);
 
 ph_est = rocket.plotvis(T_est,X_est,U_est,Ref_est);
 ph_est.fig.Name = 'Merged lin. MPC in nonlinear simulation with estimator';
-saveas(gcf,'5.2 with estimator.png')
+
 
 %% Simulation and plot without estimator
 
@@ -49,4 +51,4 @@ saveas(gcf,'5.2 with estimator.png')
 
 ph_est = rocket.plotvis(T_no_est, X_no_est, U_no_est, Ref_no_est);
 ph_est.fig.Name = 'Merged lin. MPC in nonlinear simulation without estimator';
-saveas(gcf,'5.2 without estimator.png')
+
