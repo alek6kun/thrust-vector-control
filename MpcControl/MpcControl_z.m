@@ -121,7 +121,7 @@ classdef MpcControl_z < MpcControlBase
             obj = us'*Rs*us;
             con = [M*us <= m ,xs == mpc.A*xs + mpc.B*(us+d_est),...
                    ref == mpc.C*xs + mpc.D*d_est];
-
+            %Drop M*us <= m if disturbance estimate is too large
             
             % YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE YOUR CODE HERE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
